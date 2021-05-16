@@ -1,15 +1,11 @@
 pipeline{
     agent any
-    // tools{
-    //     maven 'maven3'
-    //     jdk 'jdk8'
-    // }
+    tools{
+        maven 'maven3'
+        jdk 'jdk8'
+        mongo 'mongodb3'
+    }
     stages{
-        stage('Initialize'){
-            steps{
-                sh 'chmod 777 /c/WINDOWS/system32/config/systemprofile/AppData/Local/Jenkins/.jenkins'
-            }
-        }
         stage('Checking out git repo'){
             steps{
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'github_credentials', url: 'https://github.com/dibaroy24/angular-with-spring-boot-and-mongo.git']]])
@@ -23,7 +19,8 @@ pipeline{
             }
             post{
                 success{
-                    junit '**/build/test-reports/*.xml'
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.jar'
                 }
             }
         }
