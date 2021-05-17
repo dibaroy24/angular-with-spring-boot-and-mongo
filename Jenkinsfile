@@ -15,8 +15,8 @@ pipeline{
             }
             post{
                 success{
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                    archiveArtifacts 'target/*.jar'
+                    junit '**/build/test-results/*.xml'
+                    step( [$class: 'JacocoPublisher' ] )
                 }
             }
         }
