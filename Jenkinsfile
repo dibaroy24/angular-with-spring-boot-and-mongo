@@ -13,12 +13,6 @@ pipeline{
                 //     sh 'mvn clean verify'
                 // }
             }
-            post{
-                success{
-                    junit '**/build/test-results/*.xml'
-                    step( [$class: 'JacocoPublisher' ] )
-                }
-            }
         }
     }
 }
