@@ -1,10 +1,5 @@
 pipeline{
     agent any
-    tools{
-        maven 'maven3'
-        jdk 'jdk8'
-        // mongodb 'mongodb3'
-    }
     stages{
         stage('Checking out git repo'){
             steps{
