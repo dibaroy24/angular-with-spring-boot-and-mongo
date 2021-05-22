@@ -8,11 +8,40 @@ pipeline{
         }
         stage('Build'){
             steps{
-                sh "mvn -Dmaven.test.failure.ignore=true clean package"
+                sh 'mvn -B -DskipTests clean package'
                 // withMaven{
                 //     sh 'mvn clean verify'
                 // }
             }
         }
+        stage('Test'){
+            steps{
+                sh 'mvn test'
+            }
+            post{
+                always{
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('Build Docker Image'){
+			steps {
+				withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]){
+					sh '''
+						docker build -t dibaroy/angular_with_spring_boot_and_mongo_app .
+					'''
+				}
+			}
+		}
+        stage('Push Image To Dockerhub') {
+			steps {
+				withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]){
+					sh '''
+						docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+						docker push dibaroy/angular_with_spring_boot_and_mongo_app
+					'''
+				}
+			}
+		}
     }
 }
