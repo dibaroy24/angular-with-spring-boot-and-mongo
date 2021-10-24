@@ -1,0 +1,33 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: gs-spring-boot-docker
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: gs-spring-boot-docker
+    spec:
+      containers:
+        - image: harmonicpracticeacr.azurecr.io/gs-spring-boot-docker:__Build.BuildId__
+          name: gs-spring-boot-docker
+          imagePullPolicy: Always
+            ports:
+              - containerPort: 8081
+          imagePullSecrets:
+            - name: regsecret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gs-spring-boot-docker
+spec:
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8081
+  selector:
+    app: gs-spring-boot-docker
+  type: LoadBalancer
